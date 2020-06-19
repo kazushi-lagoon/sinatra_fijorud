@@ -1,17 +1,10 @@
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <title>edit_memo</title>
-</head>
-  <body>
-    <h1>メモアプリ</h1>
-    <p>メモ<%= @number%></p>
-    <p><%= @file_content%></p>
-    <form action=<%= "/edit_memo/#{@number}"%> >
+<body>
+  <div class="edit_memo">
+    <h1 class="d-inline-block text-center">メモアプリ</h1>
+    <form action=<%= "/edit_memo/#{@number}"%> class="edit_memo_form">
       <input type="hidden" name="_method" value="patch"/>
-      <input type="text" name="content" id="content"/>
-      <input type="submit" value="変更">
+      <textarea type="text" name="content" id="content" class="d-block edit_memo_text" placeholder="メモ<%= @number%>&#13;&#10;&#13;&#10;<%= @file_content%>"></textarea>
+      <input type="submit" value="変更" class="btn btn-success">
     </form>
-
-  </body>
-</html>
+  </div>
+</body>

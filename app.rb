@@ -18,29 +18,29 @@ end
 
 post '/new' do
   content = params[:content]
-  number = Dir.open('./public').children.count
-  File.open("./public/#{number+1}.txt", 'wb') do |f|
+  number = Dir.open('./public/memos').children.count
+  File.open("./public/memos/#{number+1}.txt", 'wb') do |f|
     f.write(content)
   end
   redirect '/'
 end
 
 get '/' do
-  @number = Dir.open('./public').children.count
+  @number = Dir.open('./public/memos').children.count
   #binding.irb
   erb :top
 end
 
 get '/edit_memo/:i' do
   @number = params[:i]
-  @file_content = File.open("./public/#{@number}.txt").read
+  @file_content = File.open("./public/memos/#{@number}.txt").read
   erb :edit_memo
 end
 
 patch '/edit_memo/:i' do
   number = params[:i]
   content = params[:content]
-  File.open("./public/#{number}.txt", 'wb') do |f|
+  File.open("./public/memos/#{number}.txt", 'wb') do |f|
     f.write(content)
   end
   redirect '/'
@@ -48,12 +48,12 @@ end
 
 get '/show_memo/:i' do
   @number = params[:i]
-  @file_content = File.open("./public/#{@number}.txt").read
+  @file_content = File.open("./public/memos/#{@number}.txt").read
   erb :show_memo
 end
 
 delete '/memo/:id' do
   number = params[:id]
-  File.delete("./public/#{number}.txt")
+  File.delete("./public/memos/#{number}.txt")
   redirect '/'
 end

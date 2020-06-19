@@ -1,15 +1,17 @@
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <title>top_memo</title>
-</head>
-  <body>
-    <h1>メモアプリ</h1>
-    <a href='/new_memo'>追加</a>
-    <ul>
-      <% @number.times do |i|%>
-        <li><a href=<%= "/show_memo/#{(i + 1)}"%> >メモ<%=(i+1)%></a></li>
-      <% end %>
-    </ul>
-  </body>
-</html>
+<body>
+  <div class="container container1">
+    <div class="row">
+      <div class="col-md-3">
+        <h1>メモアプリ</h1>
+      </div>
+      <div class="col-md-3">
+        <a href='/new_memo' class="btn btn-secondary">追加</a>
+      </div>
+    </div>
+  </div>
+  <ul>
+    <% @number.times do |i|%>
+      <li><a href=<%= "/show_memo/#{(i + 1)}"%> >メモ<%=(i+1)%></a></li>
+    <% end %>
+  </ul>
+</body>

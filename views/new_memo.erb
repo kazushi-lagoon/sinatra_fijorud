@@ -1,13 +1,9 @@
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <title>new_memo</title>
-</head>
-  <body>
-    <h1>メモアプリ</h1>
-    <form action="/new" method="POST">
-      <input type="text" name="content" id="content"/>
-      <input type="submit" value="保存">
+<body>
+  <div class="new_memo">
+    <h1 class="d-inline-block text-center">メモアプリ</h1>
+    <form action="/new" method="POST" class="new_memo_form">
+      <textarea type="text" name="content" id="content" class="d-block new_memo_text"></textarea>
+      <input type="submit" value="保存" class="btn btn-success">
     </form>
-  </body>
-</html>
+  </div>
+</body>
