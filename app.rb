@@ -1,17 +1,6 @@
 require 'sinatra'
 require 'sinatra/reloader'
 
-class Rack::MethodOverride
-  ALLOWED_METHODS=%w[POST GET]
-  def method_override(env)
-    req = Rack::Request.new(env)
-    method = req.params[METHOD_OVERRIDE_PARAM_KEY] || env[HTTP_METHOD_OVERRIDE_HEADER]
-    method.to_s.upcase
-  end
-end
-
-enable :method_override
-
 get '/new_memo' do
   erb :new_memo
 end
@@ -31,13 +20,13 @@ get '/' do
   erb :top
 end
 
-get '/edit_memo/:i' do
+get '/edition/:i' do
   @number = params[:i]
   @file_content = File.open("./public/memos/#{@number}.txt").read
-  erb :edit_memo
+  erb :edition
 end
 
-patch '/edit_memo/:i' do
+patch '/memo/:i' do
   number = params[:i]
   content = params[:content]
   File.open("./public/memos/#{number}.txt", 'wb') do |f|
@@ -46,10 +35,10 @@ patch '/edit_memo/:i' do
   redirect '/'
 end
 
-get '/show_memo/:i' do
+get '/memo/:i' do
   @number = params[:i]
   @file_content = File.open("./public/memos/#{@number}.txt").read
-  erb :show_memo
+  erb :memo
 end
 
 delete '/memo/:id' do
