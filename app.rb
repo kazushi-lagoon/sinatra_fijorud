@@ -2,6 +2,7 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
+require 'fileutils'
 
 get '/new_memo' do
   erb :new_memo
@@ -18,6 +19,7 @@ end
 
 get '/' do
   @number = Dir.open('./public/memos').children.count
+  @files = Dir.glob("./public/memos/*")
   erb :top
 end
 
@@ -45,5 +47,10 @@ end
 delete '/memo/:id' do
   number = params[:id]
   File.delete("./public/memos/#{number}.txt")
+  files = Dir.glob("./public/memos/*")
+  files.each do |f|
+    i = f.gsub('./public/memos/', '').gsub('.txt', '').to_i
+    FileUtils.mv(f, "./public/memos/#{i - 1}.txt")  if i > number.to_i
+  end
   redirect '/'
 end
