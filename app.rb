@@ -17,7 +17,7 @@ class Memo
   end
 
   def self.set
-    Memo.db.exec("select * from memos ;").to_a
+    Memo.db.exec("select * from memos order by id asc;").to_a
   end
 
   def self.memos_count
@@ -51,10 +51,8 @@ end
 
 post '/new' do
   content = params[:content]
-  number = Dir.open('./public/memos').children.count
-  File.open("./public/memos/#{number + 1}.txt", 'wb') do |f|
-    f.write(content)
-  end
+  count = Memo.memos_count
+  Memo.new(count).content_write(content)
   redirect '/'
 end
 
@@ -85,12 +83,7 @@ get '/memo/:i' do
 end
 
 delete '/memo/:id' do
-  number = params[:id]
-  File.delete("./public/memos/#{number}.txt")
-  files = Dir.glob('./public/memos/*')
-  files.each do |f|
-    i = f.gsub('./public/memos/', '').gsub('.txt', '').to_i
-    FileUtils.mv(f, "./public/memos/#{i - 1}.txt") if i > number.to_i
-  end
+  id = params[:id]
+  Memo.new(id).delete
   redirect '/'
 end
