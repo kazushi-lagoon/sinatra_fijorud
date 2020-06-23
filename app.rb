@@ -44,8 +44,8 @@ get '/memo/:i' do
   erb :memo
 end
 
-delete '/memo/:id' do
-  number = params[:id]
+delete '/memo/:i' do
+  number = params[:i]
   File.delete("./public/memos/#{number}.txt")
   files = Dir.glob('./public/memos/*')
   files.each do |f|
