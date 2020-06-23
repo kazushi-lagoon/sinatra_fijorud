@@ -6,30 +6,32 @@ require 'pg'
 
 # control memo
 class Memo
-  attr_reader :number
+  attr_reader :id
 
-  def initialize(number)
-    @number = number
+  def initialize(id)
+    @id = id
   end
 
   def self.db
-    PG.connect( dbname: 'memo' )
+    PG.connect(dbname: 'memo')
   end
 
   def self.set
-    Memo.db.exec("select * from memos order by id asc;").to_a
+    Memo.db.exec('select * from memos order by id asc;').to_a
   end
 
   def self.memos_count
-    Memo.db.exec("select count(*) from memos ;").to_a.first["count"].to_i
+    Memo.db.exec('select count(*) from memos ;').to_a.first['count'].to_i
   end
 
-  def memo_order(id)
-    Memo.set.index{|i| i['id'] == Memo.db.exec("select id from memos where id = '#{id}' ;").to_a.first['id'] } + 1
+  def memo_order
+    memo_id = "select id from memos where id = '#{id}' ;"
+    Memo.set.index { |i| i['id'] == Memo.db.exec(memo_id).to_a.first['id'] } + 1
   end
 
   def memo_content
-    Memo.db.exec("select content from memos where id = '#{number}' ;").to_a.first['content']
+    memo_content = "select content from memos where id = '#{id}' ;"
+    Memo.db.exec(memo_content).to_a.first['content']
   end
 
   def content_write(content)
@@ -37,11 +39,11 @@ class Memo
   end
 
   def content_edit(content)
-    Memo.db.exec("update memos set content = '#{content}' where id = '#{number}' ;")
+    Memo.db.exec("update memos set content = '#{content}' where id = '#{id}' ;")
   end
 
   def delete
-    Memo.db.exec("delete from memos where id = '#{number}' ;")
+    Memo.db.exec("delete from memos where id = '#{id}' ;")
   end
 end
 
@@ -52,7 +54,7 @@ end
 post '/new' do
   content = params[:content]
   count = Memo.memos_count
-  Memo.new(count).content_write(content)
+  Memo.new(count + 1).content_write(content)
   redirect '/'
 end
 
@@ -62,28 +64,28 @@ get '/' do
 end
 
 get '/edition/:i' do
-  @number = params[:i]
-  @order = Memo.new(@number).memo_order(@number)
-  @file_content = Memo.new(@number).memo_content
+  @id = params[:i]
+  @order = Memo.new(@id).memo_order
+  @file_content = Memo.new(@id).memo_content
   erb :edition
 end
 
 patch '/memo/:i' do
-  number = params[:i]
+  id = params[:i]
   content = params[:content]
-  Memo.new(number).content_edit(content)
+  Memo.new(id).content_edit(content)
   redirect '/'
 end
 
 get '/memo/:i' do
-  @number = params[:i].to_i
-  @order = Memo.new(@number).memo_order(@number)
-  @file_content = Memo.new(@number).memo_content
+  @id = params[:i]
+  @order = Memo.new(@id).memo_order
+  @file_content = Memo.new(@id).memo_content
   erb :memo
 end
 
-delete '/memo/:id' do
-  id = params[:id]
+delete '/memo/:i' do
+  id = params[:i]
   Memo.new(id).delete
   redirect '/'
 end

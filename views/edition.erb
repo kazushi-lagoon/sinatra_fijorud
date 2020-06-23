@@ -1,7 +1,7 @@
 <body>
   <div class="edit_memo">
     <h1 class="d-inline-block text-center">メモアプリ</h1>
-    <form action=<%= "/memo/#{@number}"%> class="edit_memo_form" method="post">
+    <form action=<%= "/memo/#{@id}"%> class="edit_memo_form" method="post">
       <input type="hidden" name="_method" value="patch"/>
       <textarea type="text" name="content" id="content" class="d-block edit_memo_text" placeholder="メモ<%= @order%>&#13;&#10;&#13;&#10;<%= @file_content%>"></textarea>
       <input type="submit" value="変更" class="btn btn-success">
