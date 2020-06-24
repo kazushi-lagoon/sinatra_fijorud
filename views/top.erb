@@ -10,8 +10,8 @@
     </div>
   </div>
   <ul>
-    <% @number.times do |i|%>
-      <li><a href=<%= "/memo/#{(i + 1)}"%> >メモ<%=(i+1)%></a></li>
+    <% @memos.each_with_index do |memo, i|%>
+      <li><a href=<%= "/memo/#{(memo['id'])}"%> >メモ<%= (i + 1)%></a></li>
     <% end %>
   </ul>
 </body>

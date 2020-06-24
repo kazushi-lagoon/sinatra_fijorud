@@ -2,7 +2,50 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'fileutils'
+require 'pg'
+
+# control memo
+class Memo
+  attr_reader :id
+
+  def initialize(id)
+    @id = id
+  end
+
+  def self.db
+    PG.connect(dbname: 'memo')
+  end
+
+  def self.set
+    Memo.db.exec('select * from memos order by id asc;').to_a
+  end
+
+  def self.memos_count
+    Memo.db.exec('select count(*) from memos ;').to_a.first['count'].to_i
+  end
+
+  def memo_order
+    memo_id = "select id from memos where id = '#{id}' ;"
+    Memo.set.index { |i| i['id'] == Memo.db.exec(memo_id).to_a.first['id'] } + 1
+  end
+
+  def memo_content
+    memo_content = "select content from memos where id = '#{id}' ;"
+    Memo.db.exec(memo_content).to_a.first['content']
+  end
+
+  def content_write(content)
+    Memo.db.exec("insert into memos(content) values('#{content}') ;")
+  end
+
+  def content_edit(content)
+    Memo.db.exec("update memos set content = '#{content}' where id = '#{id}' ;")
+  end
+
+  def delete
+    Memo.db.exec("delete from memos where id = '#{id}' ;")
+  end
+end
 
 get '/new_memo' do
   erb :new_memo
@@ -10,47 +53,39 @@ end
 
 post '/new' do
   content = params[:content]
-  number = Dir.open('./public/memos').children.count
-  File.open("./public/memos/#{number + 1}.txt", 'wb') do |f|
-    f.write(content)
-  end
+  count = Memo.memos_count
+  Memo.new(count + 1).content_write(content)
   redirect '/'
 end
 
 get '/' do
-  @number = Dir.open('./public/memos').children.count
-  @files = Dir.glob('./public/memos/*')
+  @memos = Memo.set
   erb :top
 end
 
 get '/edition/:i' do
-  @number = params[:i]
-  @file_content = File.open("./public/memos/#{@number}.txt").read
+  @id = params[:i]
+  @order = Memo.new(@id).memo_order
+  @file_content = Memo.new(@id).memo_content
   erb :edition
 end
 
 patch '/memo/:i' do
-  number = params[:i]
+  id = params[:i]
   content = params[:content]
-  File.open("./public/memos/#{number}.txt", 'wb') do |f|
-    f.write(content)
-  end
+  Memo.new(id).content_edit(content)
   redirect '/'
 end
 
 get '/memo/:i' do
-  @number = params[:i]
-  @file_content = File.open("./public/memos/#{@number}.txt").read
+  @id = params[:i]
+  @order = Memo.new(@id).memo_order
+  @file_content = Memo.new(@id).memo_content
   erb :memo
 end
 
 delete '/memo/:i' do
-  number = params[:i]
-  File.delete("./public/memos/#{number}.txt")
-  files = Dir.glob('./public/memos/*')
-  files.each do |f|
-    i = f.gsub('./public/memos/', '').gsub('.txt', '').to_i
-    FileUtils.mv(f, "./public/memos/#{i - 1}.txt") if i > number.to_i
-  end
+  id = params[:i]
+  Memo.new(id).delete
   redirect '/'
 end
